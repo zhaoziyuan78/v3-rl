@@ -37,7 +37,7 @@ This repository contains the code that implements *V3* in an encoder-decoder arc
 ## ✍🏼 Data Preparation
 
 <details>
-  <summary><u>Click to expand</u></summary>
+  <summary><ins>Click to expand</ins></summary>
   
 First make sure you are in the base directory `./`. By default, the datasets are placed outside the repository in a directory named `../data/`. You can change this path using arguments passed to scripts. There are some intermediate results during data preparation, which can be deleted after the final dataset is generated.
 
