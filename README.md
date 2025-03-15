@@ -8,7 +8,7 @@
 **🐣 Content varies more among different fragments within a sample but maintains an invariant vocabulary across data samples, whereas style remains relatively invariant within a sample but exhibits more significant variation across different samples.**
 
 <p align="center">
-  <img src="illustration.svg" width="50%">
+  <img src="illustration.svg" width="80%">
 </p>
 
 This repository contains the code that implements *V3* in an encoder-decoder architecture, as well as the dataset preparation scripts and the evaluation code, as described in the paper:
