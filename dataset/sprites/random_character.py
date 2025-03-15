@@ -215,33 +215,11 @@ if __name__ == "__main__":
         default="../data/sprites_frames_",
         help="Directory to save the frames",
     )
-    # parser.add_argument(
-    #     "--generate_for_ood",
-    #     action="store_true",
-    #     help="Generate out-of-distribution samples only",
-    # )
     args = parser.parse_args()
 
     save_dir = args.save_dir
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-
-    # if args.generate_for_ood:
-    #     n_generated = 0
-    #     for body in range(6, 7):
-    #         for bottom in range(6, 7):
-    #             for top in range(6, 7):
-    #                 for hair in range(
-    #                     0, 10
-    #                 ):  # (8, 10) is for test, (0, 8) is for train. body, bottom, top in range(6,7) and hair(0, 10) is ood.
-    #                     gen_char(save_dir, body, bottom, top, hair)
-    #                     n_generated += 1
-    #                     if n_generated % 100 == 0:
-    #                         print(
-    #                             "generate %d/%d sequences"
-    #                             % (n_generated, 7 * 7 * 7 * 3)
-    #                         )
-    # else:
 
     # train
     n_generated = 0

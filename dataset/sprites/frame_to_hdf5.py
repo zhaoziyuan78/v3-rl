@@ -127,33 +127,6 @@ def save_h5py(data_dir, save_path):
     hdf5.close()
 
 
-# def save_seq_ood():
-#     load_path = "frames_ood/"
-#     save_dir = "../../../data/SpritesOOD/test"
-
-#     actions = ["walk", "spellcard", "slash"]
-#     directions = ["front", "left", "right"]
-
-#     for body in range(6, 7):
-#         for bottom in range(6, 7):
-#             for top in range(6, 7):
-#                 for hair in range(0, 10):
-#                     labels = [body, bottom, top, hair]
-#                     seq, c, s = load_seq(load_path, labels)
-#                     # directly add variations here
-#                     seq_tensor = torch.tensor(seq)
-#                     c_str = "".join([str(i) for i in c])
-#                     for i in range(100):
-#                         seq_var = random_color_jitter(seq_tensor, 0.01, 0.01, 0.2, 0.5)
-#                         seq_var = seq_var.numpy()
-#                         # save to npy
-#                         save_path = os.path.join(
-#                             save_dir,
-#                             f"{c_str}_{body}{bottom}{top}{hair}_{str(i).zfill(2)}.npy",
-#                         )
-#                         np.save(save_path, seq_var)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="../data/sprites_frames_")

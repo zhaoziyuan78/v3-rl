@@ -5,7 +5,7 @@ import numpy as np
 import pretty_midi
 
 
-def gen_easy_dataset_midi(
+def gen_dataset_midi(
     save_dir, ins_list=[64, 19, 21, 41, 56, 59, 68, 71, 72, 75, 22, 52], n_per_ins=100
 ):
     """
@@ -79,4 +79,4 @@ if __name__ == "__main__":
         help="Number of midi files per instrument",
     )
     args = parser.parse_args()
-    gen_easy_dataset_midi(args.save_dir, n_per_ins=args.n_per_ins)
+    gen_dataset_midi(args.save_dir, n_per_ins=args.n_per_ins)
