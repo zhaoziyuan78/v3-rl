@@ -12,12 +12,8 @@ from importlib import import_module
 
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from torch.cuda.amp import GradScaler
-from matplotlib import pyplot as plt
-import seaborn as sns
 
 from utils.training_utils import *
 from utils.eval_utils import *
@@ -270,7 +266,6 @@ class Trainer:
                     self.model.eval()
                     running_losses_val = {}
                     sample_vq_indices = []
-                    sample_c_labels = []
                     for i, (batch_data, c_labels, s_labels) in enumerate(
                         self.val_loader
                     ):
@@ -286,15 +281,6 @@ class Trainer:
                             emb_s,
                             *rest,
                         ) = self.model(batch_data)
-
-                        # special: for speech, reweight phonemes by length
-                        if (
-                            "timitseg" in config["dataloader"]
-                            and "V3" in self.method_specs
-                        ):
-                            rest = rest + [
-                                c_labels,
-                            ]
 
                         # loss
                         losses = self.loss.compute_loss(
@@ -313,12 +299,6 @@ class Trainer:
                         # check vq indices
                         vq_indices = vq_indices.detach().cpu().numpy()
                         sample_vq_indices.append(vq_indices)
-                        if "timitunseg" not in config["dataloader"]:
-                            if "timitseg" in config["dataloader"]:
-                                c_labels = c_labels.detach().cpu().numpy()
-                                if "V3" in self.method_specs:
-                                    c_labels = c_labels[:, :, 0]
-                            sample_c_labels.append(c_labels)
 
                     # write to log
                     for k, v in running_losses_val.items():
