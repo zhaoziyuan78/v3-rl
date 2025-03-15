@@ -1,0 +1,13 @@
+.vscode/
+__pycache__/
+*/__pycache__/
+/logs/
+/wandb/
+*.swp
+*.swo
+*.svg
+*.png
+*.pdf
+*.mid
+*.wav
+*.gif
