@@ -10,6 +10,7 @@ data_dir: "../data/Librispeech100_h5"
 method: "V3"
 
 device: "cuda"
+precision: "bfloat16" # float32, float16 or bfloat16
 num_workers: 4
 batch_size: 32
 epochs: 10000 # incremental if load_checkpoint is given

@@ -37,11 +37,17 @@ class Trainer:
         if self.config["random_seed"] is not None:
             setup_seed(self.config["random_seed"])
 
-        # device
+        # device and dtype
         if self.config["device"] == "cuda" and torch.cuda.is_available():
             self.device = torch.device("cuda")
         else:
             self.device = torch.device("cpu")
+        if self.config.get("precision", "float32") == "float32":
+            self.dtype = torch.float32
+        elif self.config.get("precision") == "bfloat16":
+            self.dtype = torch.bfloat16
+        elif self.config.get("precision") == "float16":
+            self.dtype = torch.float16
 
         # log dir
         if "name" not in config:
@@ -213,7 +219,7 @@ class Trainer:
                 # Move data to device
                 batch_data = batch_data.to(device=self.device)
 
-                with torch.autocast(self.device.type):
+                with torch.autocast(self.device.type, dtype=self.dtype):
                     # forward
                     (
                         outputs,
