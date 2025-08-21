@@ -41,7 +41,7 @@ model_config:
   d_emb_s: 512
   n_atoms: 18
   threshold_ema_dead_code: 8
-  vq_ema_decay: 0.95
+  vq_ema_decay: 0.98
 
 optimizer_config:
   optimizer: "AdamW"
