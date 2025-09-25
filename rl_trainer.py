@@ -1,5 +1,5 @@
 import numpy as np
-from stable_baselines3 import PPO
+from model.PPO import PPO
 import torch
 import os
 import logging
@@ -104,12 +104,15 @@ class SegmentationEnv:
     def __init__(self, config, hidden_dim=4, action_dim=9):
         
         self.config = config
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if self.config["device"] == "cuda" and torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
         self.model = V3Model(config)
         self.prepare_data(config)
         self.data = self.get_batch_data()
         self.current_step = 0
-        self.max_steps = 1000
+        self.max_steps = self.config.get("max_steps", 1000)
         self.portion = 1
 
     def prepare_data(self, config):
@@ -164,16 +167,59 @@ class SegmentationEnv:
 class RLTrainer:
     def __init__(self, config):
         self.config = config
+        if self.config["device"] == "cuda" and torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        else:
+            self.device = torch.device("cpu")
         self.env = SegmentationEnv(config)
-        self.model = PPO(
-            policy="MlpPolicy",
-            env=self.env,
-            verbose=1,
-            tensorboard_log="./ppo_model_env_log"
-        )
+        self.model = PPO(self.config, self.device)
+        self.random_seed = config.get("random_seed", 42)
+        self.update_timestep = config.get("update_timestep", 100)
+        self.action_std_decay_freq = config.get("action_std_decay_freq", 100000)
+        self.logging_freq = config.get("logging_freq", 1000)
+        self.save_model_freq = config.get("save_model_freq", 5000)
+        current_time = int(torch.time.time())
+        self.checkpoint_dir = config.get("save_dir", "./checkpoints") + "/" + "PPO_{}.pth".format(current_time)
+        self.action_std_decay_rate = 0.05
+        self.min_action_std = 0.1
 
-    def train(self, total_timesteps=10000):
-        self.model.learn(total_timesteps=total_timesteps)
+    def train(self, total_timesteps=100000):
+        logging.info("Training Started.")
+        train_log = {}
+        torch.manual_seed(self.random_seed)
+        np.random.seed(self.random_seed)
+        
+        time_step = 0
+        i_episode = 0
+        while time_step < total_timesteps:
+            
+            state = self.env.reset()
+            current_ep_reward = 0
+            
+            for t in range(1, self.env.max_steps):
+                action = self.model.select_action(state)
+                state, reward, done = self.env.step(action)
+                
+                self.model.buffer.rewards.append(reward)
+                self.model.buffer.is_terminals.append(done)
+                
+                time_step += 1
+                current_ep_reward += reward
+                
+                if time_step % self.update_timestep == 0:
+                    self.model.update()
+                
+                if time_step % self.action_std_decay_freq == 0:
+                    self.model.decay_action_std(self.action_std_decay_rate, self.min_action_std)
+                    
+                if time_step % self.logging_freq == 0:
+                    avg_reward = current_ep_reward / t
+                    logging.info(f"Episode: {i_episode}\t Timestep: {time_step}\t Average Reward: {avg_reward:.4f}")
+                    ### TODO: Wandb logging ###
+                
+                if time_step % self.save_model_freq == 0:
+                    torch.save(self.model.policy.state_dict(), self.checkpoint_dir)
+                    logging.info(f"Model saved at {self.checkpoint_dir}")
 
     def test(self, n_episodes=5):
         #### Visualization ####
